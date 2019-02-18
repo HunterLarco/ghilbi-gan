@@ -111,7 +111,7 @@ cc_library(
         "modules/imgproc/include",
     ],
     visibility = ["//visibility:public"],
-    deps = [":opencv_core"],
+    deps = [":core"],
 )
 
 genrule(
@@ -134,7 +134,7 @@ cc_library(
     copts = ["-D__OPENCV_BUILD"],
     includes = ["modules/ml/include"],
     visibility = ["//visibility:public"],
-    deps = [":opencv_core"],
+    deps = [":core"],
 )
 
 cc_library(
@@ -160,9 +160,9 @@ cc_library(
     includes = ["modules/highgui/include"],
     visibility = ["//visibility:public"],
     deps = [
-        ":opencv_core",
-        ":opencv_imgcodecs",
-        ":opencv_videoio",
+        ":core",
+        ":imgcodecs",
+        ":videoio",
     ],
 )
 
@@ -176,14 +176,16 @@ cc_library(
     ]),
     copts = [
         "-D__OPENCV_BUILD",
+        "-Iexternal/libpng_http",
     ],
     includes = [
         "modules/imgcodecs/include",
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":opencv_core",
-        ":opencv_imgproc",
+        ":core",
+        ":imgproc",
+        "//external:libpng",
     ],
 )
 
@@ -214,8 +216,8 @@ cc_library(
     includes = ["modules/videoio/include"],
     visibility = ["//visibility:public"],
     deps = [
-        ":opencv_core",
-        ":opencv_imgcodecs",
+        ":core",
+        ":imgcodecs",
     ],
 )
 
