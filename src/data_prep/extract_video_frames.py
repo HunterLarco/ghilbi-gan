@@ -6,6 +6,7 @@ from absl import app
 from absl import flags
 from absl import logging
 import cv2
+import itertools
 import math
 import os
 
@@ -28,26 +29,16 @@ flags.mark_flag_as_required('file')
 flags.mark_flag_as_required('outdir')
 
 
-def iterate_over_frames(video, start=None, end=None, step=1):
-  if start is not None and end is not None and start > end:
-    raise ValueError('%d > %d', start, end)
-
+def iterate_over_frames(video):
   frame_number = 0
   success = True
 
   while success:
-    if end is not None and frame_number > end:
-      break
-
     success, frame = video.read()
     if not success:
       raise RuntimeError('Failed to read frame %d' % frame_number)
 
-    if start is None or frame_number >= start:
-      if (frame_number - start) % step == 0:
-        last_frame_sent = frame_number
-        yield frame_number, frame
-
+    yield frame_number, frame
     frame_number += 1
 
 
@@ -76,8 +67,8 @@ def main(argv):
   logging.info('Starting capture on frame: %d', start_frame)
   logging.info('Ending capture on frame: %d', end_frame)
 
-  frames = iterate_over_frames(
-      video, start=start_frame, end=end_frame, step=FLAGS.frame_step)
+  frames = itertools.islice(
+      iterate_over_frames(video), start_frame, end_frame, FLAGS.frame_step)
   for i, frame in frames:
     cv2.imwrite(
         os.path.join(FLAGS.outdir, 'frame:%d.png' % i), frame)
